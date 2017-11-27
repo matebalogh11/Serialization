@@ -19,22 +19,25 @@ namespace Serializer
             string phone = textPhone.Text;
             if (name != null && address != null && phone != null)
             {
-                int lastSerial = Person.FindSerial()[1];
+                int lastSerial = Person.FindSerialEdges()[1];
                 currentPerson = new Person(name, address, phone);
                 currentPerson.Serial = ++lastSerial;
                 currentPerson.Serialize();
             }
         }
 
-        private void ShowPersonData(int serial = 0)
+        private void ShowPersonData(int serial = 1)
         {
-            Person resultPerson = Person.Deserialize($"person{serial.ToString("D2")}.dat");
-            currentPerson = ((resultPerson) == null)? currentPerson: resultPerson;
-            if (currentPerson != null)
+            if (Person.FindSerialEdges()[0] > 0)
             {
-                textName.Text = currentPerson.Name;
-                textAddress.Text = currentPerson.Address;
-                textPhone.Text = currentPerson.PhoneNumber;
+                Person resultPerson = Person.Deserialize($"person{serial.ToString("D2")}.dat");
+                currentPerson = ((resultPerson) == null)? currentPerson: resultPerson;
+                if (currentPerson != null)
+                {
+                    textName.Text = currentPerson.Name;
+                    textAddress.Text = currentPerson.Address;
+                    textPhone.Text = currentPerson.PhoneNumber;
+                }
             }
         }
 
@@ -52,13 +55,13 @@ namespace Serializer
 
         private void buttonFirst_Click(object sender, EventArgs e)
         {
-            int first = Person.FindSerial()[0];
+            int first = Person.FindSerialEdges()[0];
             ShowPersonData(first);
         }
 
         private void buttonLast_Click(object sender, EventArgs e)
         {
-            int last = Person.FindSerial()[1];
+            int last = Person.FindSerialEdges()[1];
             ShowPersonData(last);
         }
     }

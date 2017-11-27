@@ -17,6 +17,7 @@ namespace Serializer
         DateTime recordingDate;
         [NonSerialized]
         int serial;
+        const int maxSerialValue = 100;
 
         public string Name { get => name; set => name = value; }
         public string Address { get => address; set => address = value; }
@@ -34,13 +35,17 @@ namespace Serializer
 
         public void Serialize()
         {
-            if (true)
+            int maxSerial = Person.FindSerialEdges()[1];
+            if (maxSerial < maxSerialValue)
             {
                 using(FileStream stream = new FileStream($"person{Serial.ToString("D2")}.dat", FileMode.Create))
                 {
                     BinaryFormatter formatter = new BinaryFormatter();
                     formatter.Serialize(stream, this);
                 }
+            } else
+            {
+                MessageBox.Show("Serial limit (99) is reached. You cannot create more person!");
             }
         }
 
@@ -63,7 +68,7 @@ namespace Serializer
             return null;
         }
 
-        public static int[] FindSerial()
+        public static int[] FindSerialEdges()
         {
             int[] lastSerial = new int[2];
             List<int> serials = new List<int>();
@@ -73,8 +78,11 @@ namespace Serializer
                 int serial = int.Parse(file.Name.Substring(file.Name.Length - 6, 2));
                 serials.Add(serial);
             }
-            lastSerial[0] = serials.Min();
-            lastSerial[1] = serials.Max();
+            if (serials.Count > 0)
+            {
+                lastSerial[0] = serials.Min();
+                lastSerial[1] = serials.Max();
+            }
             return lastSerial;
         }
 
